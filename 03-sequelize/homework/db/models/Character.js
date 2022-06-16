@@ -16,6 +16,10 @@ module.exports = (sequelize) => {
       age: {
         type: DataTypes.INTEGER,
         default: null,
+        get() {
+          const currentAge = this.getDataValue("age");
+          return currentAge ? `${currentAge} years old` : null;
+        },
       },
       race: {
         type: DataTypes.ENUM(
