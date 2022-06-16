@@ -17,6 +17,10 @@ module.exports = (sequelize) => {
     mana_cost: {
       type: DataTypes.FLOAT,
       allowNull: false,
+      validate: {
+        min: 10,
+        max: 250,
+      },
     },
     name_mana: {
       type: DataTypes.VIRTUAL,
