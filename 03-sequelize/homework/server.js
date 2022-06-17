@@ -9,10 +9,4 @@ server.use(express.json());
 server.use("/character", characterMiddleware);
 server.use("/ability", abilityMiddleware);
 
-server.use("/character", require("./routes/characterRoutes"));
-
-server.get("/", (req, res) => {
-  res.send("Henry Sequelize Homework");
-});
-
 module.exports = server;

@@ -1,8 +1,11 @@
-const { Character, Op } = require("../db");
+const { Character, Op, Ability } = require("../db");
+const Role = require("../db/models/Role");
 // https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#simple-select-queries
 
 const createCharacter = async (req, res) => {
-  const { code, name, age, race, hp, mana } = req.body;
+  const { code, name, age, race, hp, mana, role } = req.body;
+
+  const characterRole = role ?? "Support";
 
   if (!code || !name || !hp || !mana) {
     return res.status(404).send("Falta enviar datos obligatorios");
@@ -17,6 +20,9 @@ const createCharacter = async (req, res) => {
       mana,
       race: race ?? "Other",
     });
+
+    character.createRole({ name: characterRole });
+
     return res.status(201).json(character);
   } catch (error) {
     // console.log(error);
@@ -134,10 +140,68 @@ const updateCharacterAttribute = async (req, res) => {
   }
 };
 
+const addCharacterAbilities = async (req, res) => {
+  const { codeCharacter, abilities } = req.body;
+
+  if (!codeCharacter) {
+    return res.status(404).send("Codigo de personaje no provisto");
+  }
+
+  if (abilities || abilities.length < 1) {
+    return res
+      .status(404)
+      .send("Habilidades necesarias para ejecutar funcionalidad");
+  }
+
+  const character = await Character.findByPk(codeCharacter);
+
+  if (!character) {
+    return res
+      .status(404)
+      .send("Codigo de personaje no pertenece a ninguno registrado en la DB");
+  }
+
+  // console.log(character);
+
+  await Promise.all(
+    abilities.map((ability) => {
+      return character.createAbilitiy(ability);
+    })
+  );
+
+  // await character.setAbilities(abilities);
+  return res.status(200).json(character);
+};
+
+const getCharactersByRole = async (req, res) => {
+  const { code } = req.params;
+
+  if (!code) {
+    return res.status(404).send("Codigo no provisto");
+  }
+
+  const character = await Character.findByPk(code, {
+    include: {
+      model: Role,
+      attributes: ["name"],
+    },
+  });
+
+  if (!character) {
+    return res
+      .status(404)
+      .send("Codigo provisto no pertenece a ningun personaje existente");
+  }
+
+  return res.status(200).json(character);
+};
+
 module.exports = {
   getCharacter,
   createCharacter,
   getCharacterByCode,
   getCharacterYoung,
   updateCharacterAttribute,
+  addCharacterAbilities,
+  getCharactersByRole,
 };

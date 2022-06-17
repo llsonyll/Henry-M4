@@ -74,16 +74,17 @@ describe("Character Routes", () => {
         p2Character,
         p3Character,
       ]);
-      // await Promise.all([
-      //   p1.createRole({name: 'Tank'}),
-      //   p1.createRole({name: 'Top'}),
-      //   p2.createRole({name: 'Jungle'}),
-      //   p3.createRole({name: 'Mid'}),
-      //   p3.createRole({name: 'Support'})
-      // ]);
+
+      await Promise.all([
+        p1.createRole({ name: "Tank" }),
+        p1.createRole({ name: "Top" }),
+        p2.createRole({ name: "Jungle" }),
+        p3.createRole({ name: "Mid" }),
+        p3.createRole({ name: "Support" }),
+      ]);
     });
 
-    describe("Parte UNO", () => {
+    xdescribe("Parte UNO", () => {
       it("should return status 200 and the list of all characters", async () => {
         const res = await request(app).get("/character");
         expect(res.statusCode).toBe(200);
@@ -249,7 +250,7 @@ describe("Character Routes", () => {
         expect(characterOne.age).toBe("27 years old");
       });
 
-      xit("should add the abilities to the character", async () => {
+      it("should add the abilities to the character", async () => {
         await request(app)
           .put("/character/addAbilities")
           .send({
@@ -272,7 +273,7 @@ describe("Character Routes", () => {
         );
       });
 
-      xit("should return all the characters with their roles associated", async () => {
+      it("should return all the characters with their roles associated", async () => {
         const res = await request(app).get("/character/roles/ONE");
         expect(res.body.name).toBe("First");
         expect(res.body.Roles).toEqual([
